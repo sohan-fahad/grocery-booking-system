@@ -45,6 +45,7 @@ export function GroceryProductCard({
                     width={100}
                     height={100}
                     className="h-full w-full object-contain"
+                    loading="lazy"
                     onError={(e) => {
                         const el = e.currentTarget;
                         if (!el.src.includes('product-placeholder.svg')) {

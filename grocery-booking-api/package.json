@@ -1,8 +1,8 @@
 {
-  "name": "nest-typescript-starter",
+  "name": "Grocery Booking API",
   "private": true,
   "version": "1.0.0",
-  "description": "Nest TypeScript starter repository",
+  "description": "Grocery Booking API",
   "license": "MIT",
   "scripts": {
     "build": "nest build",
