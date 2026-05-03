@@ -37,7 +37,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <AppProviders>
           <TooltipProvider>
-            <NextTopLoader />
+            <NextTopLoader color="var(--primary)" height={4} showSpinner={true} />
             {children}
             <Toaster />
           </TooltipProvider>

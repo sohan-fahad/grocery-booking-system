@@ -105,6 +105,6 @@ function lineFromProduct(item: GroceryItemEntity): Omit<ShopCartLine, 'quantity'
         name: item.name,
         unitPrice: Number(item.price),
         maxQuantity: Number(item.quantity),
-        imageUrl: item.image?.url ?? null,
+        imageUrl: item.image?.link ?? null,
     };
 }

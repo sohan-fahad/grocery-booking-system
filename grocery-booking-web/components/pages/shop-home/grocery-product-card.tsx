@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import { cn } from '@/lib/utils/utils';
 import type { GroceryItemEntity } from '@/lib/models/entities';
 import type { ShopCategoryAccent } from '@/components/pages/shop-home/category-accents';
@@ -15,7 +16,7 @@ type GroceryProductCardProps = {
     onDec: () => void;
 };
 
-export function GroceryProductCard({
+export const GroceryProductCard = memo(function GroceryProductCard({
     item,
     quantityInCart,
     accent,
@@ -41,9 +42,10 @@ export function GroceryProductCard({
             <div className="relative flex h-[110px] shrink-0 items-center justify-center border-b border-border bg-muted/40 p-3">
                 <Image
                     src={item?.image?.link?.trim() ?? PRODUCT_IMAGE_PLACEHOLDER}
-                    alt=""
+                    alt={item.name ? `${item.name} product photo` : 'Product'}
                     width={100}
                     height={100}
+                    sizes="(max-width: 640px) 45vw, 180px"
                     className="h-full w-full object-contain"
                     loading="lazy"
                     onError={(e) => {
@@ -129,4 +131,4 @@ export function GroceryProductCard({
             </div>
         </article>
     );
-}
+});

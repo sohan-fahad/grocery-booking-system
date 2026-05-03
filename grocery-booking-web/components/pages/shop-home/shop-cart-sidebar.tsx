@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils/utils';
 import type { ShopCategoryAccent } from '@/components/pages/shop-home/category-accents';
-import type { ShopCartLine } from '@/lib/hooks/stores/use-shop-cart-store';
+import type { ShopCartLine } from '@/lib/hooks/stores/useShopCartStore';
 import { useAuthenticationStore } from '@/lib/hooks/stores';
 import { PRODUCT_IMAGE_PLACEHOLDER } from '@/components/pages/shop-home/product-image-placeholder';
 

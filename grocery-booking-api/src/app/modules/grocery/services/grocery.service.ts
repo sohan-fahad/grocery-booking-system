@@ -1,11 +1,20 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindManyOptions, FindOptionsWhere, ILike, Repository } from 'typeorm';
+import {
+    FindManyOptions,
+    FindOptionsWhere,
+    ILike,
+    Repository,
+} from 'typeorm';
+import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import { BaseService } from '@src/app/base';
+import { IFindByIdBaseOptions } from '@src/app/interfaces/queryOptions.interfaces';
 import { SuccessResponse } from '@src/app/types';
 import { GroceryItem } from '../entities/grocery-item.entity';
 import { CreateGroceryItemDTO, GetGroceryItemDTO } from '../dtos/grocery-item.dto';
 import { toNumber } from '@src/shared';
+
+const groceryListRelations = ['image', 'category'] as const;
 
 @Injectable()
 export class GroceryService extends BaseService<GroceryItem> {
@@ -17,7 +26,9 @@ export class GroceryService extends BaseService<GroceryItem> {
     }
 
     async addItem(payload: CreateGroceryItemDTO, imageId?: string): Promise<GroceryItem> {
-        return this.createOneBase({ ...payload, ...(imageId && { imageId }) } as any);
+        return this.createOneBase({ ...payload, ...(imageId && { imageId }) } as any, {
+            relations: [...groceryListRelations],
+        });
     }
 
     async getAllItems(filters: GetGroceryItemDTO): Promise<SuccessResponse> {
@@ -30,28 +41,48 @@ export class GroceryService extends BaseService<GroceryItem> {
         if (searchTerm) {
             where.name = ILike(`%${searchTerm}%`);
         }
-        const query: FindManyOptions<GroceryItem> = { where };
+        const query: FindManyOptions<GroceryItem> = {
+            where,
+            relations: [...groceryListRelations],
+        };
         if (page && limit) {
             query.skip = (page - 1) * limit;
             query.take = limit;
         }
         const result = await this._repo.findAndCount(query);
 
+        const pageNum = toNumber(page);
+        const limitNum = toNumber(limit);
+        const skipOffset =
+            page && limit ? Math.max(0, (pageNum - 1) * limitNum) : 0;
+
         return new SuccessResponse(
             `Grocery items fetched successfully`,
             result[0],
             {
                 total: result[1],
-                page: toNumber(page),
-                limit: toNumber(limit),
-                skip: toNumber(page) * toNumber(limit),
+                page: pageNum,
+                limit: limitNum,
+                skip: skipOffset,
             },
         );
     }
 
+    async updateOneBase(
+        id: string,
+        data: QueryDeepPartialEntity<GroceryItem>,
+        options?: IFindByIdBaseOptions,
+    ): Promise<GroceryItem> {
+        const relations =
+            options?.relations && options.relations.length > 0
+                ? options.relations
+                : [...groceryListRelations];
+        return super.updateOneBase(id, data, { ...options, relations });
+    }
+
 
     async getItemById(id: string): Promise<GroceryItem> {
-        const item = await this.findByIdBase(id);
+        const item = await this.findByIdBase(id, { relations: [...groceryListRelations] });
         if (!item) throw new NotFoundException('Grocery item not found');
         return item;
     }

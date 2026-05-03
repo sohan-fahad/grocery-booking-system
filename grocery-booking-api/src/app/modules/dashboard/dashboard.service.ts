@@ -58,6 +58,7 @@ export class DashboardService {
         const lowStockItems = await this.groceryItemRepo.find({
             where: { isActive: true, quantity: LessThanOrEqual(LOW_STOCK_THRESHOLD) },
             order: { quantity: 'ASC' },
+            relations: ['image'],
         });
 
         const recentOrders = await this.orderRepo.find({

@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 import type { UserEntity } from '@/lib/models/entities';
 import { useAuthenticationStore } from '@/lib/hooks/stores/useAuthenticationStore';
 import { SessionUtils } from '@/lib/utils/session.utils';
-import { useShopCartStore } from '@/lib/hooks/stores/use-shop-cart-store';
+import { useShopCartStore } from '@/lib/hooks/stores/useShopCartStore';
 import { usePlaceOrderMutation } from '@/lib/hooks/queries/useMyOrdersQuery';
 import { cn } from '@/lib/utils/utils';
 import { Button } from '@/components/ui/button';

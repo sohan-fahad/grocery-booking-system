@@ -27,6 +27,7 @@ export function useWebCategoriesQuery() {
             list.sort((a, b) => a.name.localeCompare(b.name));
             return list;
         },
+        staleTime: 5 * 60_000,
     });
 }
 
@@ -62,5 +63,6 @@ export function useShopGroceryItemsInfiniteQuery(filters: {
             }
             return lastPage.items.length < limit ? undefined : allPages.length + 1;
         },
+        staleTime: 60_000,
     });
 }

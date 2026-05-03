@@ -1,10 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { LayoutDashboard, ShoppingBasket, Package, ClipboardList, Tag } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
+import { LayoutDashboard, ShoppingBasket, Package, ClipboardList, Tag, LogOut, ChevronUp } from 'lucide-react';
 import { useAuthenticationStore } from '@/lib/hooks/stores';
 import { cn } from '@/lib/utils/index';
+import { useRef, useState, useEffect } from 'react';
 
 const navSections = [
     {
@@ -30,7 +31,25 @@ const navSections = [
 
 export default function DashboardSidebar() {
     const pathname = usePathname();
-    const { user } = useAuthenticationStore();
+    const router = useRouter();
+    const { user, logout } = useAuthenticationStore();
+    const [menuOpen, setMenuOpen] = useState(false);
+    const menuRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        function handleClickOutside(e: MouseEvent) {
+            if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+                setMenuOpen(false);
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const handleLogout = () => {
+        logout();
+        router.push('/auth');
+    };
 
     const isActive = (href: string) =>
         href === '/dashboard' ? pathname === href : pathname.startsWith(href);
@@ -66,11 +85,11 @@ export default function DashboardSidebar() {
                                         >
                                             <item.icon className="w-4 h-4 shrink-0" />
                                             <span className="flex-1">{item.label}</span>
-                                            {'badge' in item && item.badge !== undefined && (
+                                            {/* {'badge' in item && item.badge !== undefined && (
                                                 <span className="text-xs bg-primary/20 text-primary px-1.5 py-0.5 rounded-full font-semibold leading-none">
                                                     {item.badge}
                                                 </span>
-                                            )}
+                                            )} */}
                                         </Link>
                                     </li>
                                 );
@@ -81,14 +100,31 @@ export default function DashboardSidebar() {
             </nav>
 
             {/* User footer */}
-            <div className="px-4 py-4 border-t border-white/10 flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-sm font-bold text-primary-foreground shrink-0">
-                    {user?.name?.[0]?.toUpperCase() ?? 'A'}
-                </div>
-                <div className="min-w-0">
-                    <p className="text-sm font-medium text-white truncate">{user?.name ?? 'Admin'}</p>
-                    <p className="text-[11px] text-white/40 truncate">{user?.email ?? 'admin@grocify.com'}</p>
-                </div>
+            <div className="relative" ref={menuRef}>
+                {menuOpen && (
+                    <div className="absolute bottom-full left-3 right-3 mb-1 bg-[oklch(0.18_0_0)] border border-white/10 rounded-lg overflow-hidden shadow-lg">
+                        <button
+                            onClick={handleLogout}
+                            className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+                        >
+                            <LogOut className="w-4 h-4 shrink-0" />
+                            Log out
+                        </button>
+                    </div>
+                )}
+                <button
+                    onClick={() => setMenuOpen((v) => !v)}
+                    className="w-full px-4 py-4 border-t border-white/10 flex items-center gap-3 hover:bg-white/5 transition-colors"
+                >
+                    <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-sm font-bold text-primary-foreground shrink-0">
+                        {user?.name?.[0]?.toUpperCase() ?? 'A'}
+                    </div>
+                    <div className="min-w-0 flex-1 text-left">
+                        <p className="text-sm font-medium text-white truncate">{user?.name ?? 'Admin'}</p>
+                        <p className="text-[11px] text-white/40 truncate">{user?.email ?? 'admin@grocify.com'}</p>
+                    </div>
+                    <ChevronUp className={cn('w-4 h-4 shrink-0 text-white/30 transition-transform', !menuOpen && 'rotate-180')} />
+                </button>
             </div>
         </aside>
     );

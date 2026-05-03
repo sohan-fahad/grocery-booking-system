@@ -21,14 +21,14 @@ export class GroceryItem extends BaseEntity {
     @Column({ type: 'uuid', nullable: true })
     imageId?: string;
 
-    @ManyToOne(() => FileStorage, { nullable: true, eager: true, onDelete: 'SET NULL' })
+    @ManyToOne(() => FileStorage, { nullable: true, onDelete: 'SET NULL' })
     @JoinColumn({ name: 'imageId' })
     image?: FileStorage;
 
     @Column({ type: 'uuid', nullable: true })
     categoryId?: string;
 
-    @ManyToOne(() => Category, (cat) => cat.products, { nullable: true, eager: true, onDelete: 'SET NULL' })
+    @ManyToOne(() => Category, (cat) => cat.products, { nullable: true, onDelete: 'SET NULL' })
     @JoinColumn({ name: 'categoryId' })
     category?: Category;
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import { Plus, RefreshCw, Pencil, Trash2, PackagePlus, Search, Image as ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,9 +13,9 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from '@/components/ui/pagination';
-import { CategoryApiService } from '@/lib/services/api';
-import { GroceryItemEntity, CategoryEntity } from '@/lib/models/entities';
+import { GroceryItemEntity } from '@/lib/models/entities';
 import { useAdminGroceryItemsPickerQuery } from '@/lib/hooks/queries/useAdminGroceryItemsQuery';
+import { useAdminCategoriesQuery } from '@/lib/hooks/queries/useAdminCategoriesQuery';
 import { useDashboardItems } from '../../../lib/hooks/queries/useDashboardItems';
 import { cn } from '@/lib/utils/utils';
 import { AddItemDialog } from './add-item-dialog';
@@ -24,7 +24,7 @@ import { DeleteItemDialog } from './delete-item-dialog';
 import { InventoryDialog } from './inventory-dialog';
 
 export function ItemsPage() {
-    const [categories, setCategories] = useState<CategoryEntity[]>([]);
+    const { data: categories = [] } = useAdminCategoriesQuery();
     const {
         search,
         setSearch,
@@ -46,19 +46,6 @@ export function ItemsPage() {
     const [selectedItem, setSelectedItem] = useState<GroceryItemEntity | null>(null);
 
     const { data: pickerItems = [] } = useAdminGroceryItemsPickerQuery({ enabled: inventoryOpen });
-
-    const fetchCategories = useCallback(async () => {
-        try {
-            const res = await CategoryApiService.getAll({ limit: 100 });
-            if (res.success) setCategories(res.data ?? []);
-        } catch {
-            // non-critical
-        }
-    }, []);
-
-    useEffect(() => {
-        fetchCategories();
-    }, [fetchCategories]);
 
     const openEdit = (item: GroceryItemEntity) => {
         setSelectedItem(item);
@@ -140,9 +127,9 @@ export function ItemsPage() {
                             items.map((item) => (
                                 <TableRow key={item.id}>
                                     <TableCell>
-                                        {item.image?.url ? (
+                                        {item.image?.link ? (
                                             <img
-                                                src={item.image.url}
+                                                src={item.image.link}
                                                 alt={item.name}
                                                 className="w-10 h-10 rounded-lg object-cover"
                                             />
