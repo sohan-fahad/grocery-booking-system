@@ -1,0 +1,50 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: grocery-postgres
+    environment:
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_DATABASE:-grocery_db}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: grocery-api:latest
+    restart: always
+    ports:
+      - "4001:4001"
+    environment:
+      PORT: 4001
+      NODE_ENV: production
+      API_PREFIX: api/v1
+      API_TITLE: Grocery Booking API
+      API_DESCRIPTION: Grocery Booking System
+      API_VERSION: 1.0.0
+      DB_TYPE: postgres
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: ${DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      DB_DATABASE: ${DB_DATABASE:-grocery_db}
+      DB_SYNCHRONIZE: "true"
+      DB_LOGGING: "false"
+      JWT_SECRET: ${JWT_SECRET:-change-this-in-production}
+      JWT_SALT_ROUNDS: 10
+      JWT_EXPIRES_IN: 30d
+      JWT_REFRESH_TOKEN_EXPIRES_IN: 30d
+      ADMIN_SECRET: ${ADMIN_SECRET:-change-this-in-production}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
