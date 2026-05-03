@@ -5,7 +5,6 @@ import { CategoryApiService } from '@/lib/services/api';
 
 export const adminCategoriesPickerQueryKey = ['admin', 'categories', 'picker'] as const;
 
-/** Admin category list for item forms (add/edit). */
 export function useAdminCategoriesQuery() {
     return useQuery({
         queryKey: adminCategoriesPickerQueryKey,

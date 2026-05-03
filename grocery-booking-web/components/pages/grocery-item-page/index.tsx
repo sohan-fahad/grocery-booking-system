@@ -15,13 +15,14 @@ import {
 } from '@/components/ui/pagination';
 import { GroceryItemEntity } from '@/lib/models/entities';
 import { useAdminGroceryItemsPickerQuery } from '@/lib/hooks/queries/useAdminGroceryItemsQuery';
-import { useAdminCategoriesQuery } from '@/lib/hooks/queries/useAdminCategoriesQuery';
-import { useDashboardItems } from '../../../lib/hooks/queries/useDashboardItems';
+
+import { useDashboardItems } from '@/lib/hooks/queries/useDashboardItems';
 import { cn } from '@/lib/utils/utils';
 import { AddItemDialog } from './add-item-dialog';
 import { EditItemDialog } from './edit-item-dialog';
 import { DeleteItemDialog } from './delete-item-dialog';
 import { InventoryDialog } from './inventory-dialog';
+import { useAdminCategoriesQuery } from '@/lib/hooks/queries/useAdminCategoriesQuery';
 
 export function ItemsPage() {
     const { data: categories = [] } = useAdminCategoriesQuery();
